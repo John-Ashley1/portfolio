@@ -1,9 +1,10 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 
 const NAV_OFFSET = 84;
 
 export default function Resume() {
   const photo = "/images/headshot.jpg";
+  const [lightboxCert, setLightboxCert] = useState(null);
 
   const scrollToId = (e, id) => {
     e.preventDefault();
@@ -13,37 +14,32 @@ export default function Resume() {
     window.scrollTo({ top, behavior: "smooth" });
   };
 
-  const [certs, setCerts] = useState([
+  const certs = [
     {
       id: "cert-01",
       name: "Java Object-Oriented Programming",
       org: "CodeChum · CSIT227-2025-2026-G8 · Issued Dec 3, 2025",
-      fileUrl: "/certificates/java-oop-programming.pdf",
-      fileName: "java-oop-programming.pdf",
+      imageUrl: "/certificates/java-oop-programming.png",
     },
     {
       id: "cert-02",
       name: "Introduction to HTML",
       org: "Sololearn · Certificate CC-AJZL5OVD · Issued Aug 31, 2025",
-      fileUrl: "/certificates/introduction-to-html.pdf",
-      fileName: "introduction-to-html.pdf",
+      imageUrl: "/certificates/introduction-to-html.png",
     },
-    { id: "cert-03", name: "IBM SkillsBuild Certificate", org: "[Course Name] · IBM SkillsBuild", fileUrl: null, fileName: null },
-    { id: "cert-04", name: "Data Analytics Certificate", org: "[Organization]", fileUrl: null, fileName: null },
-  ]);
-  const fileInputs = useRef({});
-
-  const handleCertFile = (certId, file) => {
-    if (!file) return;
-    if (file.type !== "application/pdf") {
-      alert("Please choose a PDF file.");
-      return;
-    }
-    const url = URL.createObjectURL(file);
-    setCerts((prev) =>
-      prev.map((c) => (c.id === certId ? { ...c, fileUrl: url, fileName: file.name } : c))
-    );
-  };
+    {
+      id: "cert-03",
+      name: "Intermediate Programming",
+      org: "CodeChum · CSIT122 G01 · Issued Dec 11, 2024",
+      imageUrl: "/certificates/intermediate-programming.png",
+    },
+    {
+      id: "cert-04",
+      name: "Graphic Design Essentials",
+      org: "Canva Design School · Issued Sept 13, 2024",
+      imageUrl: "/certificates/canva.png",
+    },
+  ];
 
   const education = [
     { school: "Pardo Elementary School", level: "Elementary", years: "2010 – 2016" },
@@ -196,8 +192,6 @@ export default function Resume() {
         .proj ul li::marker{ color:var(--accent); }
 
         /* education / certs */
-        .ed-grid{ display:grid;grid-template-columns:1fr 1fr;gap:24px; }
-        @media (max-width:760px){ .ed-grid{ grid-template-columns:1fr; } }
         .ed-card{
           background:var(--card);border:1px solid var(--line);border-radius:10px;padding:24px;
         }
@@ -221,23 +215,38 @@ export default function Resume() {
         .cert-item:first-child{ border-top:none;padding-top:0; }
         .cert-name{ font-size:13.5px;font-weight:600; }
         .cert-org{ font-size:12px;color:var(--text-soft);margin-top:3px; }
-        .cert-actions{ display:flex;align-items:center;gap:10px;flex-shrink:0; }
-        .cert-view{
-          font-size:12px;font-weight:600;color:var(--accent);text-decoration:none;
-          border:1px solid var(--accent);padding:6px 12px;border-radius:20px;white-space:nowrap;
+
+        /* certificate image cards */
+        .cert-grid{ display:grid;grid-template-columns:repeat(2,1fr);gap:20px; }
+        @media (max-width:760px){ .cert-grid{ grid-template-columns:1fr; } }
+        .cert-card{
+          background:var(--card);border:1px solid var(--line);border-radius:10px;
+          overflow:hidden;text-align:left;cursor:pointer;padding:0;font:inherit;color:inherit;
         }
-        .cert-view:hover{ background:var(--accent-dim); }
-        .cert-upload-label{
-          font-size:12px;font-weight:600;color:var(--text-soft);text-decoration:none;cursor:pointer;
-          border:1px dashed var(--line);padding:6px 12px;border-radius:20px;white-space:nowrap;
+        .cert-card:hover{ border-color:var(--accent); }
+        .cert-card-img{
+          width:100%;aspect-ratio:1.4/1;background:var(--card-2);
+          display:flex;align-items:center;justify-content:center;overflow:hidden;
         }
-        .cert-upload-label:hover{ color:var(--text);border-color:var(--accent); }
-        .cert-replace{
-          font-size:11.5px;color:var(--text-soft);background:none;border:none;cursor:pointer;
-          text-decoration:underline;padding:0;
+        .cert-card-img img{ width:100%;height:100%;object-fit:cover;display:block; }
+        .cert-card-body{ padding:16px 18px; }
+
+        .cert-lightbox{
+          position:fixed;inset:0;z-index:200;background:rgba(6,7,8,0.92);
+          display:flex;align-items:center;justify-content:center;padding:40px;
+          cursor:zoom-out;
         }
-        .cert-replace:hover{ color:var(--accent); }
-        .cert-file-input{ display:none; }
+        .cert-lightbox img{
+          max-width:100%;max-height:100%;border-radius:8px;
+          box-shadow:0 20px 60px rgba(0,0,0,0.5);cursor:default;
+        }
+        .cert-lightbox-close{
+          position:absolute;top:24px;right:28px;
+          width:40px;height:40px;border-radius:50%;
+          background:var(--card-2);border:1px solid var(--line);color:var(--text);
+          font-size:16px;cursor:pointer;
+        }
+        .cert-lightbox-close:hover{ border-color:var(--accent);color:var(--accent); }
 
         /* portfolio */
         .port-row{ display:grid;grid-template-columns:repeat(3,1fr);gap:18px; }
@@ -291,6 +300,7 @@ export default function Resume() {
             <li><a href="#skills" onClick={(e) => scrollToId(e, "skills")}>Skills</a></li>
             <li><a href="#projects" onClick={(e) => scrollToId(e, "projects")}>Projects</a></li>
             <li><a href="#education" onClick={(e) => scrollToId(e, "education")}>Education</a></li>
+            <li><a href="#certificates" onClick={(e) => scrollToId(e, "certificates")}>Certificates</a></li>
             <li><a href="#portfolio" onClick={(e) => scrollToId(e, "portfolio")}>Portfolio</a></li>
             <li><a href="#contact" onClick={(e) => scrollToId(e, "contact")}>Contact</a></li>
           </ul>
@@ -472,65 +482,60 @@ export default function Resume() {
           </div>
         </section>
 
-        {/* EDUCATION + CERTS */}
+        {/* EDUCATION */}
         <section id="education">
           <div className="sec-head">
             <div className="sec-eyebrow">Background</div>
-            <h2>Education &amp; Certificates</h2>
+            <h2>Education</h2>
           </div>
-          <div className="ed-grid">
-            <div className="ed-card">
-              <h3 style={{ marginBottom: 16 }}>Education</h3>
-              <div className="edu-list">
-                {education.map((e) => (
-                  <div className="edu-entry" key={e.school}>
-                    <div className="edu-school">{e.school}</div>
-                    <div className="edu-level">{e.level}</div>
-                    <div className="edu-years">{e.years}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="ed-card">
-              <h3 style={{ marginBottom: 8 }}>Certificates</h3>
-              {certs.map((cert) => (
-                <div className="cert-item" key={cert.id}>
-                  <div>
-                    <div className="cert-name">{cert.name}</div>
-                    <div className="cert-org">{cert.org}</div>
-                  </div>
-                  <div className="cert-actions">
-                    {cert.fileUrl ? (
-                      <>
-                        <a className="cert-view" href={cert.fileUrl} target="_blank" rel="noopener noreferrer">
-                          View PDF ↗
-                        </a>
-                        <button
-                          className="cert-replace"
-                          onClick={() => fileInputs.current[cert.id] && fileInputs.current[cert.id].click()}
-                        >
-                          replace
-                        </button>
-                      </>
-                    ) : (
-                      <label className="cert-upload-label" htmlFor={`file-${cert.id}`}>
-                        + Attach PDF
-                      </label>
-                    )}
-                    <input
-                      id={`file-${cert.id}`}
-                      className="cert-file-input"
-                      type="file"
-                      accept="application/pdf"
-                      ref={(el) => (fileInputs.current[cert.id] = el)}
-                      onChange={(e) => handleCertFile(cert.id, e.target.files && e.target.files[0])}
-                    />
-                  </div>
+          <div className="ed-card">
+            <div className="edu-list">
+              {education.map((e) => (
+                <div className="edu-entry" key={e.school}>
+                  <div className="edu-school">{e.school}</div>
+                  <div className="edu-level">{e.level}</div>
+                  <div className="edu-years">{e.years}</div>
                 </div>
               ))}
             </div>
           </div>
         </section>
+
+        {/* CERTIFICATES */}
+        <section id="certificates">
+          <div className="sec-head">
+            <div className="sec-eyebrow">Credentials</div>
+            <h2>Certificates</h2>
+          </div>
+          <div className="cert-grid">
+            {certs.map((cert) => (
+              <button
+                key={cert.id}
+                className="cert-card"
+                onClick={() => setLightboxCert(cert)}
+              >
+                <div className="cert-card-img">
+                  <img src={cert.imageUrl} alt={cert.name} loading="lazy" />
+                </div>
+                <div className="cert-card-body">
+                  <div className="cert-name">{cert.name}</div>
+                  <div className="cert-org">{cert.org}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {lightboxCert && (
+          <div className="cert-lightbox" onClick={() => setLightboxCert(null)}>
+            <button className="cert-lightbox-close" onClick={() => setLightboxCert(null)} aria-label="Close">✕</button>
+            <img
+              src={lightboxCert.imageUrl}
+              alt={lightboxCert.name}
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        )}
 
       {/* PORTFOLIO */}
         <section id="portfolio">
