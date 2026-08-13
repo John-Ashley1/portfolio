@@ -307,7 +307,7 @@ export default function Resume() {
               <div className="role">BS Information Technology Student | Aspiring Software Developer</div>
               <p className="hero-p">
                 Motivated BSIT student based in Cebu, Philippines, focused on web development, software
-                engineering, and building practical technology solutions — with a habit of learning something
+                engineering, and building practical technology solutions with a habit of learning something
                 new on every project.
               </p>
               <div className="social-row">
@@ -358,12 +358,12 @@ export default function Resume() {
             <h2>About Me</h2>
           </div>
           <p className="about-p">
-            I'm a BS Information Technology student at Cebu Institute of Technology – University with a strong
+            I'm a BS Information Technology student at Cebu Institute of Technology  University with a strong
             interest in web development, software engineering, and practical technology solutions. Through
             coursework and hands-on projects, I've built systems ranging from internship management platforms to
             billing trackers, focusing each time on solving a real problem rather than just shipping features. I
             work well in teams, enjoy breaking down complex requirements into manageable parts, and treat every
-            project — coursework or personal — as a chance to learn a new tool or sharpen an existing skill.
+            project  coursework or personal  as a chance to learn a new tool or sharpen an existing skill.
           </p>
         </section>
 
